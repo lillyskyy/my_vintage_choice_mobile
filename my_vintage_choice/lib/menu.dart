@@ -8,8 +8,8 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
 
   final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Mood", Icons.mood),
-    ItemHomepage("Tambah Mood", Icons.add),
+    ItemHomepage("Lihat Product", Icons.inventory),
+    ItemHomepage("Tambah Product", Icons.add_shopping_cart),
     ItemHomepage("Logout", Icons.logout),
   ];
 
@@ -17,6 +17,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
     return Scaffold(
+      backgroundColor: const Color(0xFFEDE8DC),
       // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
         // Judul aplikasi "My Vintage Choice" dengan teks putih dan tebal.
