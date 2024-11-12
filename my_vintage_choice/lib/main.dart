@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_vintage_choice/menu.dart';
+import 'package:my_vintage_choice/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());
