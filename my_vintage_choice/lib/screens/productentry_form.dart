@@ -14,17 +14,19 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
   String _name = "";
   String _description = "";
   int _amount = 0;
+  int _price = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F6F6),
       appBar: AppBar(
         title: const Center(
           child: Text(
             'Form Tambah Product Kamu Hari ini',
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: const Color(0xFF257180),
         foregroundColor: Colors.white,
       ),
       // Tambahkan drawer yang sudah dibuat di sini
@@ -54,6 +56,9 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     if (value == null || value.isEmpty) {
                       return "Name tidak boleh kosong!";
                     }
+                    if (value.length < 3) {
+                      return "Name minimal 3 karakter!";
+                    }
                     return null;
                   },
                 ),
@@ -76,6 +81,9 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return "Description tidak boleh kosong!";
+                    }
+                    if (value.length < 10) {
+                      return "Description minimal 10 karakter!";
                     }
                     return null;
                   },
@@ -102,6 +110,39 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     }
                     if (int.tryParse(value) == null) {
                       return "Amount harus berupa angka!";
+                    }
+                    if (int.parse(value) <= 0) {
+                      return "Amount harus lebih dari 0!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Harga Produk",
+                    labelText: "Harga",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _price = int.tryParse(value ?? '') ?? 0;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Harga tidak boleh kosong!";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Harga harus berupa angka!";
+                    }
+                    if (int.parse(value) <= 0) {
+                      return "Harga tidak boleh kurang dari sama dengan 0!";
                     }
                     return null;
                   },
@@ -130,6 +171,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                                     Text('Name: $_name'),
                                     Text('Description: $_description'),
                                     Text('Amount: $_amount'),
+                                    Text('Price: $_price'),
                                   ],
                                 ),
                               ),

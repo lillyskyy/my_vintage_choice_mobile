@@ -13,9 +13,9 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
 
   final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Product", Icons.inventory, Colors.blue),
-    ItemHomepage("Tambah Product", Icons.add_shopping_cart, Colors.green),
-    ItemHomepage("Logout", Icons.logout, Colors.red),
+    ItemHomepage("Lihat Product", Icons.inventory, const Color(0xFFF2E5BF)),      // Cream
+    ItemHomepage("Tambah Product", Icons.add_shopping_cart, const Color(0xFFFD8B51)),  // Orange
+    ItemHomepage("Logout", Icons.logout, const Color(0xFFCB6040)),    // Terracotta
   ];
 
   @override
@@ -23,6 +23,7 @@ class MyHomePage extends StatelessWidget {
     // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
     return Scaffold(
       // AppBar adalah bagian atas halaman yang menampilkan judul.
+      backgroundColor: const Color(0xFFF6F6F6),
       appBar: AppBar(
         // Judul aplikasi "Mental Health Tracker" dengan teks putih dan tebal.
         title: const Text(
@@ -33,7 +34,7 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
         // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: const Color(0xFF257180),
         // Mengganti warna icon drawer menjadi putih
         iconTheme: const IconThemeData(color: Colors.white),
       ),
