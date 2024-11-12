@@ -334,11 +334,52 @@ final String className = 'PBP A'; // Kelas
 5. git add, commit, push
 
 
+# TUGAS 8
+
+## Kegunaan const di Flutter
+const digunakan untuk mendefinisikan objek yang bersifat immutable (tidak dapat diubah) dan dapat dihitung pada waktu kompilasi. 
+
+**Keuntungan menggunakan const adalah:**
+1. Objek const hanya dibuat sekali dan dapat digunakan kembali di seluruh aplikasi, menghemat memori.
+2. Karena objek const dihitung pada waktu kompilasi, ini dapat meningkatkan kinerja aplikasi dengan mengurangi beban kerja pada runtime.
+3. Membantu mencegah perubahan yang tidak disengaja pada objek yang seharusnya tetap konstan.
+
+**Kapan Menggunakan const:**
+- ketika tahu bahwa nilai tidak akan berubah selama runtime.
+- Cocok untuk widget stateless yang tidak memerlukan perubahan.
+  
+**Kapan Tidak Menggunakan const:**
+Jangan gunakan const untuk objek yang nilainya akan berubah selama runtime atau yang bergantung pada input pengguna.
+
+## Perbandingan Column dan Row di Flutter
+Column: Menyusun widget secara vertikal. Digunakan ketika ingin menampilkan elemen dari atas ke bawah.
+```
+  Column(
+    children: [
+      Text('Item 1'),
+      Text('Item 2'),
+      Text('Item 3'),
+    ],
+  )
+```
+Row: Menyusun widget secara horizontal. Digunakan ketika ingin menampilkan elemen dari kiri ke kanan.
+```
+  Row(
+    children: [
+      Icon(Icons.star),
+      Text('Starred Item'),
+    ],
+  )
+```
 
 
-
-
-
-
-
+## Menangani Navigasi dalam Aplikasi Flutter
+Navigasi dalam aplikasi Flutter dengan banyak halaman dapat dilakukan menggunakan Navigator dan MaterialPageRoute. Dapat menggunakan push untuk menambahkan halaman baru ke stack navigasi dan pop untuk kembali ke halaman sebelumnya.
+```
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => NewPage()),
+);
+```
+Untuk navigasi yang lebih kompleks, dapat menggunakan paket seperti flutter_bloc atau provider untuk mengelola state dan navigasi secara lebih terstruktur.
 
