@@ -371,7 +371,36 @@ Row: Menyusun widget secara horizontal. Digunakan ketika ingin menampilkan eleme
     ],
   )
 ```
+## Elemen Input yang Digunakan pada Form:
+Dalam productentry_form.dart, saya menggunakan:
+TextFormField untuk:
+1. Name (input text)
+2. Description (input text)
+3. Amount (input number)
+4. Price (input number)
+ 
+**Elemen Input Flutter Lain yang Tidak Digunakan:**
+1. Checkbox: Untuk input boolean (true/false)
+2. Radio: Untuk memilih satu opsi dari beberapa pilihan
+3. Switch: Toggle on/off
+4. Slider: Untuk memilih nilai dalam range tertentu
+5. DropdownButton: Untuk memilih dari daftar opsi
+6. DatePicker: Untuk memilih tanggal
+7. TimePicker: Untuk memilih waktu
+8. ColorPicker: Untuk memilih warna
 
+## Pengaturan Tema dalam Aplikasi:
+Saya mengimplementasikan tema dalam main.dart menggunakan ThemeData:
+```
+theme: ThemeData(
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: const Color(0xFFA5B68D),  // Warna utama
+  ).copyWith(
+    secondary: const Color(0xFFA5B68D),  // Warna sekunder
+  ),
+  useMaterial3: true,
+),
+```
 
 ## Menangani Navigasi dalam Aplikasi Flutter
 Navigasi dalam aplikasi Flutter dengan banyak halaman dapat dilakukan menggunakan Navigator dan MaterialPageRoute. Dapat menggunakan push untuk menambahkan halaman baru ke stack navigasi dan pop untuk kembali ke halaman sebelumnya.
