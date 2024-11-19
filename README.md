@@ -412,3 +412,167 @@ Navigator.push(
 ```
 Untuk navigasi yang lebih kompleks, dapat menggunakan paket seperti flutter_bloc atau provider untuk mengelola state dan navigasi secara lebih terstruktur.
 
+# TUGAS 9
+
+## MODEL UNTUK DATA JSON
+Model diperlukan untuk memetakan data JSON ke dalam objek Dart yang terstruktur. Tanpa model, kita masih bisa mengakses data JSON sebagai Map<String, dynamic>, tapi:
+- Lebih rentan error karena tidak ada type checking
+- Kode menjadi kurang maintainable
+- Tidak ada autocomplete/intellisense dari IDE
+- Sulit mendeteksi kesalahan saat compile time
+**Tidak akan error secara langsung, tapi berisiko runtime error dan bug**
+
+## FUNGSI HTTP
+ungsi utama library http adalah:
+- Melakukan HTTP requests (GET, POST, dll)
+- Menangani response dari server
+- Mengatur headers dan cookies
+- Mengelola koneksi HTTP
+
+## COOKIERequest
+Fungsi:
+- Mengelola state autentikasi
+- Menyimpan cookies session
+- Melakukan HTTP requests dengan cookies yang tersimpan
+Perlu dibagikan ke semua komponen karena:
+- Menjaga konsistensi state autentikasi
+- Memungkinkan akses protected endpoints
+- Menghindari duplikasi logic autentikasi
+- Memudahkan state management
+
+## Mekanisme Pengiriman Data
+```
+graph LR
+A[Input Form] --> B[Validasi Form]
+B --> C[Konversi ke JSON]
+C --> D[HTTP Request ke Django]
+D --> E[Proses di Django]
+E --> F[Response JSON]
+F --> G[Parse Response]
+G --> H[Update UI Flutter]
+```
+Berikut adalah penjelasan detail tentang mekanisme pengiriman data dari input hingga tampilan di Flutter:
+Proses dimulai dari Input Form di Flutter, di mana pengguna memasukkan data melalui widget form seperti TextFormField. Data ini kemudian melalui proses Validasi Form menggunakan FormKey dan fungsi validator untuk memastikan input sesuai dengan kriteria yang ditentukan (misalnya field tidak boleh kosong atau harus berformat tertentu).
+Setelah validasi berhasil, data form akan dikonversi ke format JSON menggunakan jsonEncode(). Format JSON ini diperlukan agar data dapat dikirim dan diterima dengan baik oleh server Django. Contohnya:
+
+```
+jsonEncode(<String, String>{
+    'product': _product,
+    'description': _description,
+    'stock': _stock.toString(),
+    'price': _price.toString(),
+})
+```
+
+Data JSON tersebut kemudian dikirim melalui HTTP Request ke Django menggunakan method yang sesuai (GET, POST, dll). Dalam aplikasi ini, request dilakukan menggunakan CookieRequest dari package pbp_django_auth.
+Di sisi server, Django akan memproses data yang diterima - melakukan validasi, menyimpan ke database, atau operasi lain sesuai kebutuhan. Setelah pemrosesan selesai, Django mengirimkan Response JSON kembali ke aplikasi Flutter.
+Flutter kemudian mem-parse response JSON tersebut, mengubahnya kembali menjadi objek Dart menggunakan model yang telah didefinisikan (seperti AdditionalEntry). Terakhir, Flutter mengupdate UI berdasarkan response yang diterima, misalnya menampilkan pesan sukses, memperbarui daftar item, atau melakukan navigasi ke halaman lain.
+Contoh implementasi dapat dilihat pada fungsi onPressed di productentry_form.dart:
+```
+onPressed: () async {
+    if (_formKey.currentState!.validate()) {
+        final response = await request.postJson(
+            "http://127.0.0.1:8000/create-flutter/",
+            jsonEncode(<String, String>{
+                'product': _product,
+                'description': _description,
+                'stock': _stock.toString(),
+                'price': _price.toString(),
+            }),
+        );
+        if (context.mounted) {
+            if (response['status'] == 'success') {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(
+                    content: Text("Product berhasil disimpan!"),
+                ));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                );
+            }
+        }
+    }
+}
+```
+
+## Mekanisme Authentikasi
+```
+graph TD
+A[Input Credentials] --> B[Form Validation]
+B --> C[Send to Django]
+C --> D{Django Auth}
+D -->|Success| E[Create Session]
+D -->|Fail| F[Error Response]
+E --> G[Set Cookies]
+G --> H[Update Flutter UI]
+F --> I[Show Error Message]
+```
+Proses dimulai dengan Input Credentials, di mana pengguna memasukkan username dan password melalui form login atau register. Data ini kemudian melalui Form Validation untuk memastikan field-field yang diperlukan telah diisi dengan benar. Contohnya pada register, sistem akan memvalidasi bahwa password dan konfirmasi password cocok.
+Data yang telah divalidasi kemudian dikirim ke Django melalui HTTP request. Untuk login, request dikirim ke endpoint auth/login/, sedangkan untuk register ke auth/register/. Contoh implementasinya:
+```
+final response = await request.login("http://127.0.0.1:8000/auth/login/", {
+    'username': username,
+    'password': password,
+});
+```
+Di sisi server, Django melakukan Django Auth - proses autentikasi yang mencakup verifikasi credentials dengan data di database. Jika autentikasi berhasil (Success), Django akan Create Session untuk user tersebut dan mengirimkan response sukses. Namun jika gagal (Fail), Django akan mengirimkan Error Response.
+Untuk autentikasi yang berhasil, Django akan Set Cookies yang berisi session ID. Cookies ini akan disimpan oleh CookieRequest dan digunakan untuk request-request selanjutnya. Flutter kemudian Update UI sesuai status autentikasi, misalnya navigasi ke homepage atau menampilkan pesan selamat datang:
+```
+if (request.loggedIn) {
+    String message = response['message'];
+    String uname = response['username'];
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(
+            content: Text("$message Selamat datang, $uname.")
+        ));
+}
+```
+Jika autentikasi gagal, Flutter akan Show Error Message kepada pengguna, biasanya dalam bentuk dialog atau snackbar:
+```
+showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+        title: const Text('Login Gagal'),
+        content: Text(response['message']),
+        actions: [
+            TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                    Navigator.pop(context);
+                },
+            ),
+        ],
+    ),
+);
+```
+Untuk proses logout, aplikasi akan mengirim request ke endpoint logout Django, yang akan menghapus session dan cookies, kemudian mengarahkan pengguna kembali ke halaman login.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
