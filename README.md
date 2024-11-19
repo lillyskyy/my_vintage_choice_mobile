@@ -552,13 +552,113 @@ showDialog(
 ```
 Untuk proses logout, aplikasi akan mengirim request ke endpoint logout Django, yang akan menghapus session dan cookies, kemudian mengarahkan pengguna kembali ke halaman login.
 
+## CheckList
+1. Implementasi register dan login
+```
+graph TD
+A[Buat LoginPage] --> B[Buat RegisterPage]
+B --> C[Integrasi dengan Django Auth]
+C --> D[Implementasi CookieRequest]
+D --> E[Setup Provider]
+```
+- Buat login.dart dan register.dart
+- Implementasi form dengan validasi
+- Hubungkan dengan endpoint Django /auth/login/ dan /auth/register/
+- Setup CookieRequest di main.dart untuk manajemen session
 
+2. Model custom untuk data json
+```
+class AdditionalEntry {
+    Model fields;
+    // ... properti lain
+    
+    factory AdditionalEntry.fromJson(Map<String, dynamic> json) {
+        return AdditionalEntry(
+            fields: Model.fromJson(json['fields']),
+            // ... mapping properti lain
+        );
+    }
+}
+```
 
+3. Halaman daftar item
+```
+graph LR
+A[Fetch JSON] --> B[Parse ke Model]
+B --> C[Tampilkan ListView]
+C --> D[Filter by User]
+```
+- Buat list_productentry.dart
+- Implementasi FutureBuilder untuk fetch data
+- Tampilkan dalam ListView dengan Card
+- Filter item berdasarkan user yang login
 
+4. Halaman Detail Item
+```
+graph TD
+A[Buat ProductDetailPage] --> B[Terima Item sebagai Parameter]
+B --> C[Tampilkan Detail]
+C --> D[Tambah Back Button]
+```
+- Buat product_detail.dart
+- Tampilkan semua atribut item
+- Implementasi tombol back
 
+5. Navigasi antar halaman
+```
+// Navigasi ke detail
+onTap: () {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ProductDetailPage(item: item),
+        ),
+    );
+}
 
+// Kembali ke list
+onPressed: () => Navigator.pop(context)
+```
 
+6. Filter item berdasarkan user
+```
+Future<List<AdditionalEntry>> fetchAdditional(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/json/');
+    List<AdditionalEntry> listAdditional = [];
+    for (var d in response) {
+        if (d != null) {
+            listAdditional.add(AdditionalEntry.fromJson(d));
+        }
+    }
+    return listAdditional;
+}
+```
 
+7. State management dengan provider
+```
+void main() {
+    runApp(
+        Provider(
+            create: (_) => CookieRequest(),
+            child: MyApp(),
+        ),
+    );
+}
+```
+
+8. logout handling
+```
+if (item.name == "Logout") {
+    final response = await request.logout("http://127.0.0.1:8000/auth/logout/");
+    if (response['status']) {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+    }
+}
+```
+9. Semua ini diintegrasikan dengan Django backend melalui endpoint JSON dan sistem autentikasi.
 
 
 
